@@ -1,0 +1,38 @@
+com.google.mlkit.vision.demo.app-jetified-work-multiprocess-2.7.0-0 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/09c015f4910307a0adef98f35cf2eff9/transformed/jetified-work-multiprocess-2.7.0/res
+com.google.mlkit.vision.demo.app-jetified-appcompat-resources-1.6.1-1 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/0c993f7a84ce7147972a1d8b5021f1da/transformed/jetified-appcompat-resources-1.6.1/res
+com.google.mlkit.vision.demo.app-jetified-camera-view-1.4.0-alpha01-2 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/10ab88759ace3ecc43cd070b8b6def70/transformed/jetified-camera-view-1.4.0-alpha01/res
+com.google.mlkit.vision.demo.app-lifecycle-livedata-2.6.2-3 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/1369282ce1b94d96181f73adc68f3e10/transformed/lifecycle-livedata-2.6.2/res
+com.google.mlkit.vision.demo.app-jetified-profileinstaller-1.3.0-4 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/14cd6dd0f73632372653e879069e1109/transformed/jetified-profileinstaller-1.3.0/res
+com.google.mlkit.vision.demo.app-jetified-lifecycle-process-2.6.2-5 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/1b71404122efc27413d77b22251008cd/transformed/jetified-lifecycle-process-2.6.2/res
+com.google.mlkit.vision.demo.app-jetified-lifecycle-viewmodel-savedstate-2.6.2-6 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/1dc6440d6d549f83447253fa420d3633/transformed/jetified-lifecycle-viewmodel-savedstate-2.6.2/res
+com.google.mlkit.vision.demo.app-jetified-annotation-experimental-1.3.1-7 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/3546ab4537fd72c4a95615245badc53e/transformed/jetified-annotation-experimental-1.3.1/res
+com.google.mlkit.vision.demo.app-jetified-play-services-basement-18.1.0-8 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/510d0b2811170d0d75807cc0e43fc69a/transformed/jetified-play-services-basement-18.1.0/res
+com.google.mlkit.vision.demo.app-jetified-camera-lifecycle-1.4.0-alpha01-9 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/5245149f445ab5e165d1fec0029c20aa/transformed/jetified-camera-lifecycle-1.4.0-alpha01/res
+com.google.mlkit.vision.demo.app-lifecycle-viewmodel-2.6.2-10 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/5ad89e5e5e9469120d4cc90a464b4980/transformed/lifecycle-viewmodel-2.6.2/res
+com.google.mlkit.vision.demo.app-lifecycle-runtime-2.6.2-11 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/5db5e07a398552c53b07f60fd2a17a91/transformed/lifecycle-runtime-2.6.2/res
+com.google.mlkit.vision.demo.app-work-runtime-ktx-2.7.0-12 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/661d7d5233343771f5322a82cd6b01d5/transformed/work-runtime-ktx-2.7.0/res
+com.google.mlkit.vision.demo.app-jetified-lifecycle-service-2.6.2-13 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/6823e390f63e7873b9cce8a211a285eb/transformed/jetified-lifecycle-service-2.6.2/res
+com.google.mlkit.vision.demo.app-jetified-camera-core-1.4.0-alpha01-14 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/76b455ff1d2a7b233db727410adcd6ef/transformed/jetified-camera-core-1.4.0-alpha01/res
+com.google.mlkit.vision.demo.app-jetified-camera-camera2-1.4.0-alpha01-15 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/77a22e9312f5404c22e23104d11123d4/transformed/jetified-camera-camera2-1.4.0-alpha01/res
+com.google.mlkit.vision.demo.app-jetified-core-ktx-1.9.0-16 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/83afb04704ba94d3161ca0f89e643f5e/transformed/jetified-core-ktx-1.9.0/res
+com.google.mlkit.vision.demo.app-jetified-emoji2-1.2.0-17 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/8a0777f78bcfa47490aa03185cd86673/transformed/jetified-emoji2-1.2.0/res
+com.google.mlkit.vision.demo.app-appcompat-1.6.1-18 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/8d9343f569df63b726615d18b45679d4/transformed/appcompat-1.6.1/res
+com.google.mlkit.vision.demo.app-core-runtime-2.2.0-19 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/914c174b7914e4c21b9a7bbe2ba91dda/transformed/core-runtime-2.2.0/res
+com.google.mlkit.vision.demo.app-fragment-1.3.6-20 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/93ac10b68cc6b2ecdb3339310a897f91/transformed/fragment-1.3.6/res
+com.google.mlkit.vision.demo.app-jetified-play-services-base-18.1.0-21 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/a66210b9fdcbc7db65362bbb8f86bd33/transformed/jetified-play-services-base-18.1.0/res
+com.google.mlkit.vision.demo.app-lifecycle-livedata-core-2.6.2-22 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/a6efc65e4e3b6f2a4df01e5be12b4716/transformed/lifecycle-livedata-core-2.6.2/res
+com.google.mlkit.vision.demo.app-jetified-activity-1.6.0-23 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/a9de7f1815b1db32d1996129cf3e7a91/transformed/jetified-activity-1.6.0/res
+com.google.mlkit.vision.demo.app-jetified-startup-runtime-1.1.1-24 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/ae856b81a8986a2ad442d3172f04319d/transformed/jetified-startup-runtime-1.1.1/res
+com.google.mlkit.vision.demo.app-jetified-emoji2-views-helper-1.2.0-25 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/ba536794b9d8e9efb32f25f611e78fd4/transformed/jetified-emoji2-views-helper-1.2.0/res
+com.google.mlkit.vision.demo.app-jetified-savedstate-1.2.1-26 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/be0b9e3eb7d36c371d11f1c6da43abde/transformed/jetified-savedstate-1.2.1/res
+com.google.mlkit.vision.demo.app-core-1.9.0-27 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/c73afc1fa215d9ca128620a3c01802b0/transformed/core-1.9.0/res
+com.google.mlkit.vision.demo.app-jetified-camera-video-1.4.0-alpha01-28 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/d4963f88c81e213ad049084ee1084fd8/transformed/jetified-camera-video-1.4.0-alpha01/res
+com.google.mlkit.vision.demo.app-work-runtime-2.7.0-29 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/ed170b04aff288236eb25807942511b1/transformed/work-runtime-2.7.0/res
+com.google.mlkit.vision.demo.app-constraintlayout-2.1.4-30 /Users/karthick.rvthoughtworks.com/.gradle/caches/transforms-3/fe5722c2d28764b765710ac6c318c6e8/transformed/constraintlayout-2.1.4/res
+com.google.mlkit.vision.demo.app-resValues-31 /Users/karthick.rvthoughtworks.com/Work/My Projects/Freelance/posemaker/app/build/generated/res/resValues/debug
+com.google.mlkit.vision.demo.app-rs-32 /Users/karthick.rvthoughtworks.com/Work/My Projects/Freelance/posemaker/app/build/generated/res/rs/debug
+com.google.mlkit.vision.demo.app-mergeDebugResources-33 /Users/karthick.rvthoughtworks.com/Work/My Projects/Freelance/posemaker/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
+com.google.mlkit.vision.demo.app-mergeDebugResources-34 /Users/karthick.rvthoughtworks.com/Work/My Projects/Freelance/posemaker/app/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
+com.google.mlkit.vision.demo.app-merged_res-35 /Users/karthick.rvthoughtworks.com/Work/My Projects/Freelance/posemaker/app/build/intermediates/merged_res/debug
+com.google.mlkit.vision.demo.app-debug-36 /Users/karthick.rvthoughtworks.com/Work/My Projects/Freelance/posemaker/app/src/debug/res
+com.google.mlkit.vision.demo.app-main-37 /Users/karthick.rvthoughtworks.com/Work/My Projects/Freelance/posemaker/app/src/main/res
