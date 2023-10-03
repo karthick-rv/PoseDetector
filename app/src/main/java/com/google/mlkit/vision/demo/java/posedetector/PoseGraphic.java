@@ -23,12 +23,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.util.Log;
 
 import com.google.mlkit.vision.common.PointF3D;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.GraphicOverlay.Graphic;
-import com.google.mlkit.vision.demo.java.LivePreviewActivity;
+import com.google.mlkit.vision.demo.java.posedetector.poseanalyzer.Pose1Analyzer;
+import com.google.mlkit.vision.demo.java.posedetector.poseanalyzer.Pose2Analyzer;
+import com.google.mlkit.vision.demo.java.texttospeech.TTSMessageListener;
 import com.google.mlkit.vision.pose.Pose;
 import com.google.mlkit.vision.pose.PoseLandmark;
 import java.util.List;
@@ -39,7 +40,7 @@ public class PoseGraphic extends Graphic {
 
   private static final float DOT_RADIUS = 8.0f;
   private static final float IN_FRAME_LIKELIHOOD_TEXT_SIZE = 30.0f;
-  private static final float STROKE_WIDTH = 10.0f;
+  private static final float STROKE_WIDTH = 15.0f;
   private static final float POSE_CLASSIFICATION_TEXT_SIZE = 60.0f;
 
   private final Pose pose;
@@ -50,6 +51,8 @@ public class PoseGraphic extends Graphic {
   private float zMax = Float.MIN_VALUE;
 
   private final List<String> poseClassification;
+
+  private final TTSMessageListener ttsMessageListener;
   private final Paint classificationTextPaint;
   private final Paint leftPaint;
   private final Paint rightPaint;
@@ -57,13 +60,25 @@ public class PoseGraphic extends Graphic {
   private final Paint anglePaint;
   private final Paint distancePaint;
   private final Paint msgPaint;
+
+  PoseLandmark leftShoulder;
+  PoseLandmark rightShoulder;
+  PoseLandmark leftWrist;
+  PoseLandmark rightWrist;
+  PoseLandmark leftHip;
+  PoseLandmark rightHip;
+  PoseLandmark leftAnkle;
+  PoseLandmark rightAnkle;
+
+
   PoseGraphic(
-      GraphicOverlay overlay,
-      Pose pose,
-      boolean showInFrameLikelihood,
-      boolean visualizeZ,
-      boolean rescaleZForVisualization,
-      List<String> poseClassification) {
+          GraphicOverlay overlay,
+          Pose pose,
+          boolean showInFrameLikelihood,
+          boolean visualizeZ,
+          boolean rescaleZForVisualization,
+          List<String> poseClassification,
+          TTSMessageListener ttsMessageListener) {
     super(overlay);
     this.pose = pose;
     this.showInFrameLikelihood = showInFrameLikelihood;
@@ -71,6 +86,7 @@ public class PoseGraphic extends Graphic {
     this.rescaleZForVisualization = rescaleZForVisualization;
 
     this.poseClassification = poseClassification;
+    this.ttsMessageListener = ttsMessageListener;
     classificationTextPaint = new Paint();
     classificationTextPaint.setColor(Color.WHITE);
     classificationTextPaint.setTextSize(POSE_CLASSIFICATION_TEXT_SIZE);
@@ -78,18 +94,18 @@ public class PoseGraphic extends Graphic {
 
     whitePaint = new Paint();
     whitePaint.setStrokeWidth(STROKE_WIDTH);
-    whitePaint.setColor(Color.parseColor("#00bfff"));
+    whitePaint.setColor(Color.parseColor("#0af2d3"));
     whitePaint.setTextSize(IN_FRAME_LIKELIHOOD_TEXT_SIZE);
     leftPaint = new Paint();
     leftPaint.setStrokeWidth(STROKE_WIDTH);
-    leftPaint.setColor(Color.parseColor("#00bfff"));
+    leftPaint.setColor(Color.parseColor("#0af2d3"));
     rightPaint = new Paint();
     rightPaint.setStrokeWidth(STROKE_WIDTH);
-    rightPaint.setColor(Color.parseColor("#00bfff"));
+    rightPaint.setColor(Color.parseColor("#0af2d3"));
 
     anglePaint = new Paint();
     anglePaint.setStrokeWidth(STROKE_WIDTH);
-    anglePaint.setColor(Color.YELLOW);
+    anglePaint.setColor(Color.RED);
     anglePaint.setTextSize(300);
 
     distancePaint = new Paint();
@@ -99,8 +115,8 @@ public class PoseGraphic extends Graphic {
 
     msgPaint = new Paint();
     msgPaint.setStrokeWidth(STROKE_WIDTH);
-    msgPaint.setColor(Color.GREEN);
-    msgPaint.setTextSize(45);
+    msgPaint.setColor(Color.BLACK);
+    msgPaint.setTextSize(120);
     msgPaint.setTextAlign(Paint.Align.CENTER);
 
   }
@@ -207,6 +223,11 @@ public class PoseGraphic extends Graphic {
     drawLine(canvas, rightAnkle, rightHeel, rightPaint);
     drawLine(canvas, rightHeel, rightFootIndex, rightPaint);
 
+
+
+
+    /* ------ Previous code Start
+
     double handX2 = leftWrist.getPosition().x;
     double handY2 = leftWrist.getPosition().y;
     double handX1 = leftShoulder.getPosition().x;
@@ -286,13 +307,21 @@ public class PoseGraphic extends Graphic {
 // Now, you can calculate the distance between the feet in feet using the camera-to-person distance
     double actualDistanceBetweenFeet = distanceBetweenFeet * (cameraToPersonDistanceFeet/pixelsPerFoot);
 
+    canvas.drawText(
+            "X: " + nose.getPosition().x + " Y: " + nose.getPosition().y,
+            xPos,
+            canvas.getHeight()/2f,
+            msgPaint);
+
     if(distance>= 4 && distance<=6){
       if(actualDistanceBetweenFeet<11){
+
         canvas.drawText(
-                "Distance between your feet's should be grater than 1 feet",
+                "Distance between your feet's should be greater than 1 feet",
                 xPos,
                 translateY2(),
                 msgPaint);
+//        ttsMessageListener.messageReceived();
       }else {
         if ((angleDegrees >= 40 && angleDegrees <= 50) && (rangleDegrees >= 40 && rangleDegrees <= 50)) {
           canvas.drawText(
@@ -319,6 +348,76 @@ public class PoseGraphic extends Graphic {
     Log.d("tryDistance","d="+LivePreviewActivity.FLX+"    "+LivePreviewActivity.horizontalAngle+"    "+LivePreviewActivity.verticalAngle+"   "+LivePreviewActivity.width);
 
     Log.d("tryDistance","d="+distance);
+
+
+
+     Previous code end ------------------- */
+
+// --------------------------
+//    case fullBodyNotVisible = "Your full body is not visible in the camera screen. Please step back."    - check all landmark points are visible
+//    case spreadLegs = "Legs are too close together. Please spread your legs apart by approximately 1 foot."    - check distance between right ankle point and left ankle point is 1 feet
+//    case legsNotStraight = "Legs are not straight. Please straighten both legs, ensuring no bending at the knees."  - check angle between kee - hip and kee - ankle, it should be 90 degree straight
+//    case tooCloseWarning = "You are standing too close to the device. Maintain a distance of 5-6 feet from the camera." - check z axis distance, distance should 5-6 not more not less
+//    case tooFarWarning = "You are too far from the device. Stand closer to the camera within the 5-6 feet range." - check z axis distance, distance should 5-6 not more not less
+//    case handsNotStraight = "The hands are not straight. Please straighten both hands." - check angle between shoulder - wrist
+//    case lowerHands = "Hands are not at a 45-degree angle. Please lower hands slightly." - its already implemented, check if it is correct.
+//    case riseHands = "Hands are not at a 45-degree angle. Please raise hands slightly."  - its already implemented, check if it is correct.
+
+
+//    App complete flow
+//            - Open app
+//            - Open front camera
+//    - TTS(Text-To-Speech) - "Please place your device vertically straight on a table, and step back, to make yourself fully visible in the camera frame."
+//            - validate if there is a human in the frame - if fails TTS an error
+//    - validate if all body parts are visible in frame - if fails TTS an error
+//    - validate human is standing within 4-6 feet range - if fails TTS an error
+//    - validate human hands are in 45 degree - if failse TTS an error
+//    If every validation succeeded then start a countdown 5 to 1
+//    Take a pic
+//            - (TTS) ask the human to rotate 90 degree
+//            - similar validations
+//            - if validation success take picture 2
+// -------------------------------
+
+
+//    canvas.drawText(
+//            String.format(Locale.US, "%.0f", leftBodyAngle),
+//            translateX(leftWrist.getPosition().x),
+//            translateY(leftWrist.getPosition().y),
+//            anglePaint);
+//
+//    canvas.drawText(
+//            String.format(Locale.US, "%.0f", rightBodyAngle),
+//            translateX(rightWrist.getPosition().x),
+//            translateY(rightWrist.getPosition().y),
+//            anglePaint);
+
+//    canvas.drawText(
+//            String.format(Locale.US, "%.0f", poseAnalyzer.angleOfRightHand(pose)),
+//            translateX(rightShoulder.getPosition().x),
+//            translateY(rightShoulder.getPosition().y),
+//            anglePaint);
+//
+
+//    canvas.drawText(
+//            String.format(Locale.US, "%.0f", pose2Analyzer.getAngle(rightShoulder, rightElbow, rightWrist)),
+//            translateX(rightHip.getPosition().x),
+//            translateY(rightHip.getPosition().y),
+//            msgPaint);
+
+
+//    canvas.drawText(
+//            String.format(Locale.US, "X: %.0f + Y: %.0f", rightShoulder.getPosition().x, rightShoulder.getPosition().y),
+//            translateX(rightShoulder.getPosition().x),
+//            translateY(rightShoulder.getPosition().y),
+//            msgPaint);
+//
+//    canvas.drawText(
+//            String.format(Locale.US, "X: %.0f + Y: %.0f", leftShoulder.getPosition().x, leftShoulder.getPosition().y),
+//            translateX(leftShoulder.getPosition().x),
+//            translateY(leftShoulder.getPosition().y),
+//            msgPaint);
+
 //    double landmarkX = leftEyeOuter.getPosition3D().getX();// X-coordinate;
 //    double landmarkY = leftEyeOuter.getPosition3D().getY();// Y-coordinate;
 //    double landmarkZ = leftEyeOuter.getPosition3D().getZ();// Z-coordinate;
@@ -357,6 +456,8 @@ public class PoseGraphic extends Graphic {
 //    double estimatedDistance = realSize / imageY;
 
 
+
+    /* ------- Previous code
     canvas.drawText(
             String.format(Locale.US, "%.0f", angleDegrees),
             translateX(leftWrist.getPosition().x),
@@ -375,6 +476,9 @@ public class PoseGraphic extends Graphic {
             translateY(rightMouth.getPosition().y),
             distancePaint);
 
+
+
+    ---- previous code end */
 
 //    canvas.drawText(
 //            String.format(Locale.US, "%.0f", actualDistanceBetweenFeet),

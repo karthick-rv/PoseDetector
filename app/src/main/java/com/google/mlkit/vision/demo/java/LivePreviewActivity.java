@@ -16,8 +16,6 @@
 
 package com.google.mlkit.vision.demo.java;
 
-import static java.lang.Math.atan;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -53,6 +51,8 @@ import com.google.mlkit.vision.demo.CameraSourcePreview;
 import com.google.mlkit.vision.demo.GraphicOverlay;
 import com.google.mlkit.vision.demo.R;
 import com.google.mlkit.vision.demo.java.posedetector.PoseDetectorProcessor;
+import com.google.mlkit.vision.demo.java.texttospeech.TTSMessageListener;
+import com.google.mlkit.vision.demo.java.texttospeech.TextToSpeechUtil;
 import com.google.mlkit.vision.demo.preference.PreferenceUtils;
 import com.google.mlkit.vision.demo.preference.SettingsActivity;
 
@@ -65,7 +65,7 @@ import java.util.List;
 /** Live preview demo for ML Kit APIs. */
 @KeepName
 public final class LivePreviewActivity extends AppCompatActivity
-    implements OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
+    implements OnItemSelectedListener, CompoundButton.OnCheckedChangeListener, TTSMessageListener {
   private static final String OBJECT_DETECTION = "Object Detection";
   private static final String OBJECT_DETECTION_CUSTOM = "Custom Object Detection";
   private static final String CUSTOM_AUTOML_OBJECT_DETECTION =
@@ -90,18 +90,17 @@ public final class LivePreviewActivity extends AppCompatActivity
   private CameraSourcePreview preview;
   private GraphicOverlay graphicOverlay;
   private String selectedModel = POSE_DETECTION;
-  public static float FLX = 0;
-  public static float FLY = 0;
+  public float focalLength = 0;
   public static float FLPX = 0;
   public static float FLPY = 0;
-  public static double horizontalAngle = 0;
-  public static double verticalAngle = 0;
+
   public static int width = 0;
   public static int height = 0;
 
   float F = 1f;           //focal length
-  float sensorX, sensorY; //camera sensor dimensions
-  float angleX, angleY;
+  float horizontalViewAngle, verticalViewAngle;
+  private TextToSpeechUtil textToSpeechUtil;
+
   private Camera frontCam() {
     int cameraCount = 0;
     Camera cam = null;
@@ -123,150 +122,14 @@ public final class LivePreviewActivity extends AppCompatActivity
   }
 
 
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    //if(grantResults.length>0 && grantResults[0] == RESULT_OK){
-      Camera camera = frontCam();
-      Camera.Parameters campar = camera.getParameters();
-      LivePreviewActivity.FLX = campar.getFocalLength();
-      F = campar.getFocalLength();
-      angleX = campar.getHorizontalViewAngle();
-      angleY = campar.getVerticalViewAngle();
-      LivePreviewActivity.horizontalAngle = (float) (Math.tan(Math.toRadians(angleX / 2)) * 2 * F);
-      LivePreviewActivity.verticalAngle = (float) (Math.tan(Math.toRadians(angleY / 2)) * 2 * F);
-      camera.stopPreview();
-      camera.release();
-
-      CameraManager cameraManager = null;
-      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-
-      }
-      String cameraId = "";// Specify the camera ID
-
-
-      CameraCharacteristics characteristics = null;
-      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-        try {
-          String[] cameraIds = cameraManager.getCameraIdList();
-          // Now cameraIds array contains the available camera IDs
-          cameraId = cameraIds[0];
-          characteristics = cameraManager.getCameraCharacteristics(cameraId);
-
-          float[] focalLengths = new float[0];
-          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-          }
-
-          if (focalLengths != null && focalLengths.length > 0) {
-            float focalLength = focalLengths[0]; // Focal length in millimeters
-
-            //FLX = focalLength;
-            // FLY = focalLength;
-            SizeF sensorSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-            //   horizontalAngle = (2f * atan((sensorSize.getWidth()  /  (focalLength * 2f))));// * 180.0 / Math.PI;
-            //     verticalAngle =   (2f * atan((sensorSize.getHeight() /  (focalLength * 2f)))) ;// 180.0 / Math.PI;
-            // You can convert millimeters to other units if needed
-          }
-
-          float[] lensIntrinsicCalibration = new float[0];
-          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            lensIntrinsicCalibration = characteristics.get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
-            if (lensIntrinsicCalibration != null && lensIntrinsicCalibration.length >= 2) {
-              float principalPointX = lensIntrinsicCalibration[0];
-              FLPX = lensIntrinsicCalibration[0];
-              FLPY = lensIntrinsicCalibration[1];// The first element represents principalPointX
-            }
-          }
-          Log.d("tryFL",FLX+"  "+FLPY+"   "+FLPX+"  "+FLPY);
-
-        } catch (CameraAccessException e) {
-          e.printStackTrace();
-        }
-
-
-
-      }
-
-      Spinner spinner = findViewById(R.id.spinner);
-      List<String> options = new ArrayList<>();
-//    options.add(OBJECT_DETECTION);
-//    options.add(OBJECT_DETECTION_CUSTOM);
-//    options.add(CUSTOM_AUTOML_OBJECT_DETECTION);
-//    options.add(FACE_DETECTION);
-//    options.add(BARCODE_SCANNING);
-//    options.add(IMAGE_LABELING);
-//    options.add(IMAGE_LABELING_CUSTOM);
-//    options.add(CUSTOM_AUTOML_LABELING);
-      options.add(POSE_DETECTION);
-//    options.add(SELFIE_SEGMENTATION);
-//    options.add(TEXT_RECOGNITION_LATIN);
-//    options.add(TEXT_RECOGNITION_CHINESE);
-//    options.add(TEXT_RECOGNITION_DEVANAGARI);
-//    options.add(TEXT_RECOGNITION_JAPANESE);
-//    options.add(TEXT_RECOGNITION_KOREAN);
-//    options.add(FACE_MESH_DETECTION);
-
-      // Creating adapter for spinner
-      ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_style, options);
-      // Drop down layout style - list view with radio button
-      dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-      // attaching data adapter to spinner
-      spinner.setAdapter(dataAdapter);
-      spinner.setOnItemSelectedListener(this);
-
-      ToggleButton facingSwitch = findViewById(R.id.facing_switch);
-      facingSwitch.setOnCheckedChangeListener(this);
-
-      ImageView settingsButton = findViewById(R.id.settings_button);
-      settingsButton.setOnClickListener(
-              v -> {
-                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                intent.putExtra(
-                        SettingsActivity.EXTRA_LAUNCH_SOURCE, SettingsActivity.LaunchSource.LIVE_PREVIEW);
-                startActivity(intent);
-              });
-
-      createCameraSource(selectedModel);
-      createCameraSource(selectedModel);
-      startCameraSource();
-   // }
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    Log.d(TAG, "onCreate");
-
-    setContentView(R.layout.activity_vision_live_preview);
-
-    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
-      Toast.makeText(this, "Grant Permission and restart app", Toast.LENGTH_SHORT).show();
-    } else {
-      Camera camera = frontCam();
-      Camera.Parameters campar = camera.getParameters();
-      LivePreviewActivity.FLX = campar.getFocalLength();
-      F = campar.getFocalLength();
-      angleX = campar.getHorizontalViewAngle();
-      angleY = campar.getVerticalViewAngle();
-      LivePreviewActivity.horizontalAngle = (float) (Math.tan(Math.toRadians(angleX / 2)) * 2 * F);
-      LivePreviewActivity.verticalAngle = (float) (Math.tan(Math.toRadians(angleY / 2)) * 2 * F);
-      camera.stopPreview();
-      camera.release();
-    }
-
-    preview = findViewById(R.id.preview_view);
-    if (preview == null) {
-      Log.d(TAG, "Preview is null");
-    }
-    graphicOverlay = findViewById(R.id.graphic_overlay);
-    if (graphicOverlay == null) {
-      Log.d(TAG, "graphicOverlay is null");
-    }
-
+  private void initializeCamera(){
+    Camera camera = frontCam();
+    Camera.Parameters campar = camera.getParameters();
+    focalLength = campar.getFocalLength();
+    horizontalViewAngle = campar.getHorizontalViewAngle();
+    verticalViewAngle = campar.getVerticalViewAngle();
+    camera.stopPreview();
+    camera.release();
 
     CameraManager cameraManager = null;
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -276,67 +139,50 @@ public final class LivePreviewActivity extends AppCompatActivity
     String cameraId = "";// Specify the camera ID
 
 
-      CameraCharacteristics characteristics = null;
-      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-        try {
-          String[] cameraIds = cameraManager.getCameraIdList();
-          // Now cameraIds array contains the available camera IDs
-          cameraId = cameraIds[0];
-          characteristics = cameraManager.getCameraCharacteristics(cameraId);
+    CameraCharacteristics characteristics = null;
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      try {
+        String[] cameraIds = cameraManager.getCameraIdList();
+        // Now cameraIds array contains the available camera IDs
+        cameraId = cameraIds[0];
+        characteristics = cameraManager.getCameraCharacteristics(cameraId);
 
-          float[] focalLengths = new float[0];
-          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-          }
-
-          if (focalLengths != null && focalLengths.length > 0) {
-            float focalLength = focalLengths[0]; // Focal length in millimeters
-
-            //FLX = focalLength;
-           // FLY = focalLength;
-            SizeF sensorSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
-         //   horizontalAngle = (2f * atan((sensorSize.getWidth()  /  (focalLength * 2f))));// * 180.0 / Math.PI;
-       //     verticalAngle =   (2f * atan((sensorSize.getHeight() /  (focalLength * 2f)))) ;// 180.0 / Math.PI;
-            // You can convert millimeters to other units if needed
-          }
-
-          float[] lensIntrinsicCalibration = new float[0];
-          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            lensIntrinsicCalibration = characteristics.get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
-            if (lensIntrinsicCalibration != null && lensIntrinsicCalibration.length >= 2) {
-              float principalPointX = lensIntrinsicCalibration[0];
-              FLPX = lensIntrinsicCalibration[0];
-              FLPY = lensIntrinsicCalibration[1];// The first element represents principalPointX
-            }
-          }
-          Log.d("tryFL",FLX+"  "+FLPY+"   "+FLPX+"  "+FLPY);
-
-        } catch (CameraAccessException e) {
-          e.printStackTrace();
+        float[] focalLengths = new float[0];
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+          focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
         }
 
+        if (focalLengths != null && focalLengths.length > 0) {
+          float focalLength = focalLengths[0]; // Focal length in millimeters
 
+          //FLX = focalLength;
+          // FLY = focalLength;
+          SizeF sensorSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+          //   horizontalAngle = (2f * atan((sensorSize.getWidth()  /  (focalLength * 2f))));// * 180.0 / Math.PI;
+          //     verticalAngle =   (2f * atan((sensorSize.getHeight() /  (focalLength * 2f)))) ;// 180.0 / Math.PI;
+          // You can convert millimeters to other units if needed
+        }
 
+        float[] lensIntrinsicCalibration = new float[0];
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+          lensIntrinsicCalibration = characteristics.get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
+          if (lensIntrinsicCalibration != null && lensIntrinsicCalibration.length >= 2) {
+            float principalPointX = lensIntrinsicCalibration[0];
+            FLPX = lensIntrinsicCalibration[0];
+            FLPY = lensIntrinsicCalibration[1];// The first element represents principalPointX
+          }
+        }
+        Log.d("tryFL", focalLength +"  "+FLPY+"   "+FLPX+"  "+FLPY);
+
+      } catch (CameraAccessException e) {
+        e.printStackTrace();
       }
+
+    }
 
     Spinner spinner = findViewById(R.id.spinner);
     List<String> options = new ArrayList<>();
-//    options.add(OBJECT_DETECTION);
-//    options.add(OBJECT_DETECTION_CUSTOM);
-//    options.add(CUSTOM_AUTOML_OBJECT_DETECTION);
-//    options.add(FACE_DETECTION);
-//    options.add(BARCODE_SCANNING);
-//    options.add(IMAGE_LABELING);
-//    options.add(IMAGE_LABELING_CUSTOM);
-//    options.add(CUSTOM_AUTOML_LABELING);
     options.add(POSE_DETECTION);
-//    options.add(SELFIE_SEGMENTATION);
-//    options.add(TEXT_RECOGNITION_LATIN);
-//    options.add(TEXT_RECOGNITION_CHINESE);
-//    options.add(TEXT_RECOGNITION_DEVANAGARI);
-//    options.add(TEXT_RECOGNITION_JAPANESE);
-//    options.add(TEXT_RECOGNITION_KOREAN);
-//    options.add(FACE_MESH_DETECTION);
 
     // Creating adapter for spinner
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_style, options);
@@ -351,15 +197,51 @@ public final class LivePreviewActivity extends AppCompatActivity
 
     ImageView settingsButton = findViewById(R.id.settings_button);
     settingsButton.setOnClickListener(
-        v -> {
-          Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-          intent.putExtra(
-              SettingsActivity.EXTRA_LAUNCH_SOURCE, SettingsActivity.LaunchSource.LIVE_PREVIEW);
-          startActivity(intent);
-        });
+            v -> {
+              Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+              intent.putExtra(
+                      SettingsActivity.EXTRA_LAUNCH_SOURCE, SettingsActivity.LaunchSource.LIVE_PREVIEW);
+              startActivity(intent);
+            });
 
     createCameraSource(selectedModel);
+    startCameraSource();
 
+  }
+
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    //if(grantResults.length>0 && grantResults[0] == RESULT_OK){
+
+   // }
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Log.d(TAG, "onCreate");
+    textToSpeechUtil = new TextToSpeechUtil(this);
+
+    setContentView(R.layout.activity_vision_live_preview);
+
+    preview = findViewById(R.id.preview_view);
+    if (preview == null) {
+      Log.d(TAG, "Preview is null");
+    }
+    graphicOverlay = findViewById(R.id.graphic_overlay);
+    if (graphicOverlay == null) {
+      Log.d(TAG, "graphicOverlay is null");
+    }
+
+    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+      initializeCamera();
+    } else {
+      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+      Toast.makeText(this, "Grant Permission and restart app", Toast.LENGTH_SHORT).show();
+    }
   }
 
   @Override
@@ -416,11 +298,15 @@ public final class LivePreviewActivity extends AppCompatActivity
                   new PoseDetectorProcessor(
                           this,
                           poseDetectorOptions,
+                          horizontalViewAngle,
+                          verticalViewAngle,
+                          focalLength,
                           shouldShowInFrameLikelihood,
                           visualizeZ,
                           rescaleZ,
                           runClassification,
-                          /* isStreamMode = */ true));
+                          /* isStreamMode = */ true,
+                          this));
           break;
         default:
           Log.e(TAG, "Unknown model: " + model);
@@ -463,7 +349,7 @@ public final class LivePreviewActivity extends AppCompatActivity
   public void onResume() {
     super.onResume();
     Log.d(TAG, "onResume");
-    createCameraSource(selectedModel);
+//    createCameraSource(selectedModel);
     startCameraSource();
   }
 
@@ -480,5 +366,10 @@ public final class LivePreviewActivity extends AppCompatActivity
     if (cameraSource != null) {
       cameraSource.release();
     }
+  }
+
+  @Override
+  public void messageReceived(String message, boolean isFlush) {
+    textToSpeechUtil.speak(message, isFlush);
   }
 }
